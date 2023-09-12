@@ -9,7 +9,7 @@ if len(sys.argv) != 2:
 
 #---------------------------------------- UTILITARIOS ----------------------------------------#
 def getRandomValue(min, max, level):
-    rand = random.randint(min, max);
+    rand = random.randint(min, max)
 
     i = 1
     while i < level:
@@ -17,13 +17,13 @@ def getRandomValue(min, max, level):
         i += 1
     
     return rand // level
-#---------------------------------------- UTILITARIOS ----------------------------------------#
 
-#--------------------------------------- AÇÕES DO JOGO ---------------------------------------#
 class Card:
     value = 0
     found = False
+#---------------------------------------- UTILITARIOS ----------------------------------------#
 
+#--------------------------------------- AÇÕES DO JOGO ---------------------------------------#
 def newGame():
     cards = []
     i = 0
@@ -75,7 +75,7 @@ def getGame(cards):
     return jogoStr
 
 def guessValidate(guess):
-    if guess < 1 or guess > 9:
+    if guess < 1 or guess > 10:
         return -1
         
     return guess
@@ -100,6 +100,13 @@ def getGuess(soc1, soc2, currentPlayer, cards):
     soc2.send((str(guess)+"-"+str(cardValue)).encode('utf-8'))
     
     return guess
+
+def endGameValidate(cards):
+    for c in cards:
+        if not c.found:
+            return False
+        
+    return True
 #--------------------------------------- AÇÕES DO JOGO ---------------------------------------#
 
 
@@ -126,7 +133,7 @@ currentPlayer = 1
 playersScore = [0,0]
 cards = newGame()
 
-while True:
+while not endGameValidate(cards):
     msg = getGame(cards)
     soc1.send(str(currentPlayer).encode('utf-8'))
     soc2.send(str(currentPlayer).encode('utf-8'))
@@ -148,4 +155,22 @@ while True:
 
     print(playersScore)
 
-s.close()
+soc1.send('0'.encode('utf-8'))
+soc2.send('0'.encode('utf-8'))
+
+placar = ' Placar: '+str(playersScore[0])+'x'+str(playersScore[1])
+if playersScore[0] == playersScore[1]:
+    soc1.send(('O jogo empatou'+placar).encode('utf-8'))
+    soc2.send(('O jogo empatou'+placar).encode('utf-8'))
+
+if playersScore[0] >= playersScore[1]:
+    soc1.send(('Você ganhou.'+placar).encode('utf-8'))
+    soc2.send(('Você perdeu.'+placar).encode('utf-8'))
+else:
+    soc1.send(('Você perdeu.'+placar).encode('utf-8'))
+    soc2.send(('Você ganhou.'+placar).encode('utf-8'))
+
+soc1.close()
+soc2.close()
+
+print('Fim de jogo. '+placar)

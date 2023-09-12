@@ -15,7 +15,8 @@ playerId = int(client_socket.recv(1024).decode('utf-8'))
 if playerId == 1:
     print("Aguardando seu adversário...")
 
-while(True):
+currentPlayer = playerId
+while currentPlayer != 0:
     currentPlayer = int(client_socket.recv(1024).decode('utf-8'))
     data = client_socket.recv(1024).decode('utf-8')
     
@@ -34,3 +35,6 @@ while(True):
         client_socket.send(userGuess.encode('utf-8'))
         
     print(client_socket.recv(1024).decode('utf-8'))
+
+data = client_socket.recv(1024).decode('utf-8')
+print(data)
