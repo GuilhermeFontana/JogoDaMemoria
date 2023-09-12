@@ -22,8 +22,15 @@ while(True):
     print(data)
 
     if playerId == currentPlayer:
-        print("Sua vez")
-
-        userGuess = input() + ',' + input()
+        print("Sua vez. Escolha a primeira carta")
+        userGuess = input()
         client_socket.send(userGuess.encode('utf-8'))
-    
+
+    print(client_socket.recv(1024).decode('utf-8'))
+        
+    if playerId == currentPlayer:
+        print("Escolha a segunda carta")
+        userGuess = input()
+        client_socket.send(userGuess.encode('utf-8'))
+        
+    print(client_socket.recv(1024).decode('utf-8'))
