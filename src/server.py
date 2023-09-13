@@ -2,10 +2,13 @@ import sys
 import socket
 import random
 import time
+import os
 
 if len(sys.argv) != 2:
     print("%s <porta>" % sys.argv[0])
     sys.exit(0)
+
+os.system("cls")
 
 #---------------------------------------- UTILITARIOS ----------------------------------------#
 def getRandomValue(min, max, level):
@@ -112,7 +115,7 @@ def endGameValidate(cards):
 
 server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
-ip = 'localhost'
+ip = '127.0.0.1'
 porta = int(sys.argv[1])
 
 server_socket.bind((ip, porta))
@@ -146,7 +149,7 @@ while not endGameValidate(cards):
     guess1 = getGuess(soc1, soc2, currentPlayer, cards) -1
     guess2 = getGuess(soc1, soc2, currentPlayer, cards) -1
 
-    if guess1 > -1 and guess1 != guess2 and cards[guess1].value == cards[guess2].value:
+    if guess1 > -1 and guess1 != guess2 and cards[guess1].value == cards[guess2].value and not cards[guess1].found and not cards[guess2].found:
         cards[guess1].found = True
         cards[guess2].found = True
         playersScore[currentPlayer-1] += 1

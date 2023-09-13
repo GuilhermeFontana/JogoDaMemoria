@@ -1,5 +1,7 @@
 import sys
 import socket
+import os
+import time
 
 if len(sys.argv) != 3:
     print("%s <ip> <porta>" % sys.argv[0])
@@ -7,6 +9,8 @@ if len(sys.argv) != 3:
 
 ip = sys.argv[1]
 porta = int(sys.argv[2])
+
+os.system("cls")
 
 client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 client_socket.connect((ip,porta))
@@ -18,8 +22,11 @@ if playerId == 1:
 currentPlayer = playerId
 while currentPlayer != 0:
     currentPlayer = int(client_socket.recv(1024).decode('utf-8'))
-    data = client_socket.recv(1024).decode('utf-8')
     
+    time.sleep(2)
+    os.system("cls")
+
+    data = client_socket.recv(1024).decode('utf-8')
     print(data)
 
     if playerId == currentPlayer:
