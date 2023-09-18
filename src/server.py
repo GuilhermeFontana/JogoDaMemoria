@@ -3,12 +3,20 @@ import socket
 import random
 import time
 import os
+import platform
+
+MAX_CARDS = 100
+MIN_CARDS = 1
+COUNT_CARDS = 40
 
 if len(sys.argv) != 2:
     print("%s <porta>" % sys.argv[0])
     sys.exit(0)
 
-os.system("cls")
+if platform.system() == "Windows":
+    os.system("cls")
+else:
+    os.system("clear")
 
 #---------------------------------------- UTILITARIOS ----------------------------------------#
 def getRandomValue(min, max, level):
@@ -30,17 +38,17 @@ class Card:
 def newGame():
     cards = []
     i = 0
-    while i < 10:
+    while i < COUNT_CARDS:
         cards.append(None)
         i = i + 1
 
     i = 0
-    while i < 5:
+    while i < COUNT_CARDS // 2:
         card = Card()
         
         contains = True
         while contains:
-            card.value = getRandomValue(1,27,10)
+            card.value = getRandomValue(MIN_CARDS,MAX_CARDS,10)
 
             contains = False
             for c in cards:
@@ -51,7 +59,7 @@ def newGame():
             
         added = 0
         while added < 2:
-            index = getRandomValue(0,9,1)
+            index = getRandomValue(0,(COUNT_CARDS-1),1)
 
             print
 
@@ -78,24 +86,30 @@ def getGame(cards):
     return jogoStr
 
 def guessValidate(guess):
-    if guess < 1 or guess > 10:
+    if guess < 1 or guess > COUNT_CARDS:
         return -1
         
     return guess
 
 def getGuess(soc1, soc2, currentPlayer, cards):
+    data = None
+
     if currentPlayer == 1:
-        data = soc1.recv(1024).decode('utf-8')
+        while data == None:
+            data = soc1.recv(1024).decode('utf-8')
+
         print("Recebi 1: %s" % data)
     else:
-        data = soc2.recv(1024).decode('utf-8')
+        while data == None:
+            data = soc2.recv(1024).decode('utf-8')
+
         print("Recebi 2: %s" % data)
     
     guess = guessValidate(int(data))
-    
-    if guess == -1:
-        soc1.send(str(guess)+"-0".encode('utf-8'))
-        soc2.send(str(guess)+"-0".encode('utf-8'))
+
+    if guess == -1 or cards[guess-1].found:
+        soc1.send((str(guess)+"-0").encode('utf-8'))
+        soc2.send((str(guess)+"-0").encode('utf-8'))
         return -1
 
     cardValue = cards[guess-1].value
@@ -119,7 +133,7 @@ ip = '127.0.0.1'
 porta = int(sys.argv[1])
 
 server_socket.bind((ip, porta))
-server_socket.listen(10)
+server_socket.listen(2)
 
 print("Aguardando os jogadores...")
 
@@ -149,17 +163,19 @@ while not endGameValidate(cards):
     guess1 = getGuess(soc1, soc2, currentPlayer, cards) -1
     guess2 = getGuess(soc1, soc2, currentPlayer, cards) -1
 
-    if guess1 > -1 and guess1 != guess2 and cards[guess1].value == cards[guess2].value and not cards[guess1].found and not cards[guess2].found:
+    if guess1 > -1 and guess2 > -1 and guess1 != guess2 and cards[guess1].value == cards[guess2].value and not cards[guess1].found and not cards[guess2].found:
         cards[guess1].found = True
         cards[guess2].found = True
         playersScore[currentPlayer-1] += 1
-
-    currentPlayer = 2 if currentPlayer == 1 else 1
+    else:
+        currentPlayer = 2 if currentPlayer == 1 else 1
 
     print(playersScore)
 
 soc1.send('0'.encode('utf-8'))
 soc2.send('0'.encode('utf-8'))
+
+time.sleep(0.5)
 
 placar = ' Placar: '+str(playersScore[0])+'x'+str(playersScore[1])
 if playersScore[0] == playersScore[1]:

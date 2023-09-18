@@ -2,6 +2,7 @@ import sys
 import socket
 import os
 import time
+import platform
 
 if len(sys.argv) != 3:
     print("%s <ip> <porta>" % sys.argv[0])
@@ -9,8 +10,6 @@ if len(sys.argv) != 3:
 
 ip = sys.argv[1]
 porta = int(sys.argv[2])
-
-os.system("cls")
 
 client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 client_socket.connect((ip,porta))
@@ -24,7 +23,10 @@ while currentPlayer != 0:
     currentPlayer = int(client_socket.recv(1024).decode('utf-8'))
     
     time.sleep(2)
-    os.system("cls")
+    if platform.system() == "Windows":
+        os.system("cls")
+    else:
+        os.system("clear")
 
     data = client_socket.recv(1024).decode('utf-8')
     print(data)
