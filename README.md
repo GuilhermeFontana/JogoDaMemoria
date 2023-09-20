@@ -1,4 +1,4 @@
-# JogoDaVelhaTCP
+# Jogo Da Memória TCP
 
 Este projeto foi realizado para a cadeira: **_CIC4004A - Programação Concorrente, Paralela e Distribuída_** do cursor de **_[Ciência da Computação, na UCS](https://www.ucs.br/ciencias-da-computacao)_**, semestre 2023/4
 
