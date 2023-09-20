@@ -29,9 +29,6 @@ def getRandomValue(min, max, level):
     
     return rand // level
 
-class Card:
-    value = 0
-    found = False
 #---------------------------------------- UTILITARIOS ----------------------------------------#
 
 #--------------------------------------- AÇÕES DO JOGO ---------------------------------------#
@@ -44,15 +41,18 @@ def newGame():
 
     i = 0
     while i < COUNT_CARDS // 2:
-        card = Card()
+        card = {
+            "value": 0,
+            "found": False
+        }
         
         contains = True
         while contains:
-            card.value = getRandomValue(MIN_CARDS,MAX_CARDS,10)
+            card["value"] = getRandomValue(MIN_CARDS,MAX_CARDS,10)
 
             contains = False
             for c in cards:
-                if c != None and c.value == card.value:
+                if c != None and c["value"] == card["value"]:
                     contains = True
                     break
 
@@ -71,7 +71,7 @@ def newGame():
 
     gabaritoStr = 'Gabarito: ['
     for c in cards:
-        gabaritoStr += str(c.value) + ','
+        gabaritoStr += str(c["value"]) + ','
     gabaritoStr = gabaritoStr[0:len(gabaritoStr)-1] + ']'
     print(gabaritoStr)
 
@@ -80,7 +80,7 @@ def newGame():
 def getGame(cards):
     jogoStr = '['
     for c in cards:
-        jogoStr += 'X,' if not c.found else  str(c.value) + ','
+        jogoStr += 'X,' if not c["found"] else  str(c["value"]) + ','
     jogoStr = jogoStr[0:len(jogoStr)-1] + ']'
 
     return jogoStr
@@ -107,12 +107,12 @@ def getGuess(soc1, soc2, currentPlayer, cards):
     
     guess = guessValidate(int(data))
 
-    if guess == -1 or cards[guess-1].found:
+    if guess == -1 or cards[guess-1]["found"]:
         soc1.send((str(guess)+"-0").encode('utf-8'))
         soc2.send((str(guess)+"-0").encode('utf-8'))
         return -1
 
-    cardValue = cards[guess-1].value
+    cardValue = cards[guess-1]["value"]
     soc1.send((str(guess)+"-"+str(cardValue)).encode('utf-8'))
     soc2.send((str(guess)+"-"+str(cardValue)).encode('utf-8'))
     
@@ -120,7 +120,7 @@ def getGuess(soc1, soc2, currentPlayer, cards):
 
 def endGameValidate(cards):
     for c in cards:
-        if not c.found:
+        if not c["found"]:
             return False
         
     return True
@@ -163,9 +163,9 @@ while not endGameValidate(cards):
     guess1 = getGuess(soc1, soc2, currentPlayer, cards) -1
     guess2 = getGuess(soc1, soc2, currentPlayer, cards) -1
 
-    if guess1 > -1 and guess2 > -1 and guess1 != guess2 and cards[guess1].value == cards[guess2].value and not cards[guess1].found and not cards[guess2].found:
-        cards[guess1].found = True
-        cards[guess2].found = True
+    if guess1 > -1 and guess2 > -1 and guess1 != guess2 and cards[guess1]["value"] == cards[guess2]["value"] and not cards[guess1]["found"] and not cards[guess2]["found"]:
+        cards[guess1]["found"] = True
+        cards[guess2]["found"] = True
         playersScore[currentPlayer-1] += 1
     else:
         currentPlayer = 2 if currentPlayer == 1 else 1
@@ -181,13 +181,13 @@ placar = ' Placar: '+str(playersScore[0])+'x'+str(playersScore[1])
 if playersScore[0] == playersScore[1]:
     soc1.send(('O jogo empatou'+placar).encode('utf-8'))
     soc2.send(('O jogo empatou'+placar).encode('utf-8'))
-
-if playersScore[0] >= playersScore[1]:
-    soc1.send(('Você ganhou.'+placar).encode('utf-8'))
-    soc2.send(('Você perdeu.'+placar).encode('utf-8'))
 else:
-    soc1.send(('Você perdeu.'+placar).encode('utf-8'))
-    soc2.send(('Você ganhou.'+placar).encode('utf-8'))
+    if playersScore[0] > playersScore[1]:
+        soc1.send(('Você ganhou.'+placar).encode('utf-8'))
+        soc2.send(('Você perdeu.'+placar).encode('utf-8'))
+    else:
+        soc1.send(('Você perdeu.'+placar).encode('utf-8'))
+        soc2.send(('Você ganhou.'+placar).encode('utf-8'))
 
 soc1.close()
 soc2.close()
