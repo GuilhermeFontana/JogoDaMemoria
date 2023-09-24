@@ -1,5 +1,4 @@
 import arcade
-import random
 import sys
 import socket
 import time
@@ -35,14 +34,6 @@ ROW_COUNT = int(CARD_COUNT / COLUMN_COUNT)
 CARD_WIDTH = 65
 CARD_HEIGHT = 120
 
-CARDS = []
-for ascii_code in range(65, CARD_COUNT_WITHOUT_DIPLICATES + 65):
-    # append 2 times
-    CARDS.append(chr(ascii_code))
-    CARDS.append(chr(ascii_code))
-
-random.shuffle(CARDS)
-
 STATES = {
     'WAITING_PLAYER': 'Aguardando segundo jogador...',
     'WAITING_TURN': 'Vez do adversário',
@@ -59,7 +50,6 @@ class MyGame(arcade.Window):
         super().__init__(width, height, title)
 
         self.GAME_STATE = STATES['WAITING_PLAYER']
-        self.cards = []
         self.first_selected_card_number = None
         self.second_selected_card_number = None
         self.opponent_moves_count = 0
@@ -68,24 +58,21 @@ class MyGame(arcade.Window):
         self.current_player = playerId
         self.is_screen_filled = False
 
-        self.selected_card_1 = None # { 'card': '', 'coords': (-1,-1) }
-        self.selected_card_2 = None # { 'card': '', 'coords': (-1,-1) }
         self.grid = []
 
         # inicializando grid em forma de matriz
         for r in range(0, ROW_COUNT):
             self.grid.append([])
             for c in range(0, COLUMN_COUNT):
-                self.grid[r].append('_X_')
+                self.grid[r].append('X')
 
         arcade.set_background_color(arcade.color.WHEAT)
 
-    def set_cards(self, cards):
-        self.cards = cards
+    def update_grid(self, cards):
         for r in range(0, ROW_COUNT):
             for c in range(0, COLUMN_COUNT):
                 card_index = c + r * COLUMN_COUNT
-                self.grid[r][c] = self.cards[card_index]
+                self.grid[r][c] = cards[card_index]
 
     def update_grid_based_on_movement(self, move):
         print(f'update grid based on move: {move}')
@@ -104,11 +91,7 @@ class MyGame(arcade.Window):
         print(f'self.grid[row][col] = card_value: self.grid[{row}][{col}] = {card_value}')
 
     def setup(self):
-        card_counter = 0
-        for row in range(0, ROW_COUNT):
-            for col in range(0, COLUMN_COUNT):
-                self.grid[row][col] = CARDS[card_counter]
-                card_counter += 1
+        pass
 
     def on_draw(self):
         arcade.start_render()
@@ -137,7 +120,7 @@ class MyGame(arcade.Window):
                     arcade.draw_text(card_number, x - CARD_WIDTH/2, y - 15 + CARD_HEIGHT/2)
         arcade.finish_render()
 
-    def update(self, delta_time):
+    def update(self, _dt):
         if self.GAME_STATE == STATES['WAITING_TURN'] and self.is_screen_filled and self.opponent_moves_count < 2:
             # ficaremos esperando a jogada do oponente
             print('pre socket.recv opponent move')
@@ -171,8 +154,8 @@ class MyGame(arcade.Window):
                 print('pre socket.recv cards')  
                 data = client_socket.recv(1024).decode('utf-8')
                 data = data.replace('[', '').replace(']', '').split(',')
-                self.set_cards(data)
-                print(f'pos socket.recv cards: {self.cards}')
+                self.update_grid(data)
+                print(f'pos socket.recv cards: {data}')
 
                 self.opponent_moves_count = 0
                 self.first_selected_card_number = None
@@ -211,7 +194,7 @@ class MyGame(arcade.Window):
         Called whenever the mouse moves.
         """
 
-    def on_mouse_press(self, mouse_x, mouse_y, button, key_modifiers):
+    def on_mouse_press(self, mouse_x, mouse_y, button, _key_modifiers):
         if button != 1: # button != left_click
             return
         
@@ -227,8 +210,6 @@ class MyGame(arcade.Window):
 
         if not mouse_click_inside_grid:
             print('MOUSE_PRESS *NOT* INSIDE THE GRID')
-            self.selected_card_1 = None
-            self.selected_card_2 = None
             return
 
         for row in range(0, ROW_COUNT):
