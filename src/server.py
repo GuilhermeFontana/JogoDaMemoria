@@ -61,8 +61,6 @@ def newGame():
         while added < 2:
             index = getRandomValue(0,(COUNT_CARDS-1),1)
 
-            print
-
             if cards[index] == None:
                 cards[index] = card
                 added = added + 1
@@ -155,7 +153,7 @@ while not endGameValidate(cards):
     soc1.send(str(currentPlayer).encode('utf-8'))
     soc2.send(str(currentPlayer).encode('utf-8'))
 
-    time.sleep(0.5)
+    time.sleep(2)
 
     soc1.send(msg.encode('utf-8'))
     soc2.send(msg.encode('utf-8'))
@@ -191,5 +189,6 @@ else:
 
 soc1.close()
 soc2.close()
+server_socket.close()
 
 print('Fim de jogo. '+placar)
