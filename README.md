@@ -32,7 +32,10 @@ A implementação deverá empregar o modelo de cliente-servido, sendo formada po
 ## 💻 Tecnologias
 
 <p align="left"> 
-    <a href="httpshttps://www.python.org/" target="_blank" rel="noreferrer"> 
+    <a href="https://www.python.org/" target="_blank" rel="noreferrer"> 
         <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/c3/Python-logo-notext.svg/1869px-Python-logo-notext.svg.png" alt="python" width="50" height="50"/> 
-    </a> 
+    </a>
+    <a href="https://api.arcade.academy/en/latest/" target="_blank" rel="noreferrer"> 
+        <img src="https://api.arcade.academy/en/2.6.1/_images/arcade-logo.svg" alt="Python Arcade" width="50" height="50"/> 
+    </a>
 </p>
