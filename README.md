@@ -6,7 +6,8 @@ Este projeto foi realizado para a cadeira: **_CIC4004A - Programação Concorren
 
 **Objetivos do Trabalho**
 
-Implementar o jogo da memória, onde os dois usuários se enfrentam utilizando computadores diferentes, utilizando sockets TCP.
+Implementar o jogo da memória, onde os dois usuários se enfrentam utilizando computadores diferentes.
+Deve ser desenvolvido de duas maneira, a primeira utilizando sockets TCP e a segunda RPC ou RMI.
 
 **Descrição do Jogo da Memória**
 
