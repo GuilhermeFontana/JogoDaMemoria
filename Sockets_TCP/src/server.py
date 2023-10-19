@@ -151,12 +151,12 @@ playersScore = [0,0]
 cards = newGame()
 
 while not endGameValidate(cards):
-    time.sleep(0.5)
+    time.sleep(1)
 
     soc1.send(str(currentPlayer).encode('utf-8'))
     soc2.send(str(currentPlayer).encode('utf-8'))
 
-    time.sleep(0.5)
+    time.sleep(1)
 
     msg = getGame(cards) 
     soc1.send(msg.encode('utf-8'))
@@ -177,7 +177,7 @@ while not endGameValidate(cards):
 soc1.send('0'.encode('utf-8'))
 soc2.send('0'.encode('utf-8'))
 
-time.sleep(0.5)
+time.sleep(1)
 
 placar = ' Placar: '+str(playersScore[0])+'x'+str(playersScore[1])
 if playersScore[0] == playersScore[1]:
@@ -193,5 +193,7 @@ else:
 
 soc1.close()
 soc2.close()
+
+server_socket.close()
 
 print('Fim de jogo. '+placar)
