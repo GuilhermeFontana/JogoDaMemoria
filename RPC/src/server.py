@@ -1,3 +1,5 @@
+import os
+import platform
 import xmlrpc.server
 import sys
 import random
@@ -81,10 +83,10 @@ def guessValidate(guess):
     if guess == currentGuess[0]:
         return -1
         
-    return guess-1
+    return guess
 
 def processGuess():
-    if currentGuess[0] > -1 and currentGuess[1] > -1 and currentGuess[0] != currentGuess[1] and cards[currentGuess[0]]["value"] == cards[currentGuess[1]]["value"] and not cards[currentGuess[0]]["found"] and not cards[currentGuess[1]]["found"]:
+    if currentGuess[0] > 0 and currentGuess[1] > 0 and currentGuess[0] != currentGuess[1] and cards[currentGuess[0]-1]["value"] == cards[currentGuess[1]-1]["value"] and not cards[currentGuess[0]-1]["found"] and not cards[currentGuess[1]-1]["found"]:
         cards[currentGuess[0]]["found"] = True
         cards[currentGuess[1]]["found"] = True
         playersScore[currentPlayer-1] += 1
@@ -133,7 +135,6 @@ def sendGuess(playerId, guess):
         currentGuess = [0,0]
         return -1
 
-
     if currentGuess[0] == 0:
         currentGuess[0] = _guess
     else:
@@ -144,37 +145,41 @@ def sendGuess(playerId, guess):
     print(currentGuess)
     return 1
 
-def getCurrentguess(playerId):
+def getCurrentGame(playerId):
     global currentGuess
     global currentGuessRead
+    global cards
 
-    strCurrentGuess = "["
-    if currentGuess[0] == 0:
-        strCurrentGuess += "[0,0]"
-    else:
-        strCurrentGuess += "[" + str(currentGuess[0]) + "," + str(cards[currentGuess[0]]["value"]) + "], "
+    print(currentGuess)
+
+    jogoStr = '['
+    for i, c in enumerate(cards):
+        if ((currentGuess[0] != 0 and currentGuess[0] == i) or (currentGuess[1] != 0 and currentGuess[1] == i)):
+            jogoStr += str(c["value"]) + ','
+        else:
+            jogoStr += 'X,' if not c["found"] else  str(c["value"]) + ','
+    jogoStr = jogoStr[0:len(jogoStr)-1] + ']'
+        
     if currentGuess[1] == 0:
-        strCurrentGuess += "[0,0]"
-    else:
-        strCurrentGuess += "[" + str(currentGuess[1]) + "," + str(cards[currentGuess[1]]["value"]) + "]"
-    strCurrentGuess += "]"
-    
-    if currentGuess[1] != 0:
-        return strCurrentGuess
-    
+        return jogoStr
+
     if currentGuessRead < 3:
         if currentGuessRead != playerId:
             currentGuessRead += playerId
-
-        return strCurrentGuess
     else:
         currentGuess = [0,0]
         currentGuessRead = 0
-        return [0,0]
-        
+        changeCurentPlayer()
+
+    return jogoStr
+
 
 #---------------------------------------- COMUNICAÇÃO ---------------------------------------#
 
+if platform.system() == "Windows":
+    os.system("cls")
+else:
+    os.system("clear")
 
 if len(sys.argv) != 2:
     print("$s <porta>" % sys.argv[0])
@@ -199,7 +204,7 @@ playersScore = [0,0]
 
 servidor.register_function(connect, "connect")
 servidor.register_function(getCurrenPlayer, "getCurrenPlayer")
-servidor.register_function(getCurrentguess, "getCurrentguess")
+servidor.register_function(getCurrentGame, "getCurrentGame")
 servidor.register_function(sendGuess, "sendGuess")
 
 
