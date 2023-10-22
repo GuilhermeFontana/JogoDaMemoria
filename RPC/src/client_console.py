@@ -36,7 +36,6 @@ if playerId == 1:
 
 while (currentPlayer < 3):
     currentPlayer = server.getCurrenPlayer()
-    print("CP: ", currentPlayer)
 
     if playerId == currentPlayer:
         print("getCurrentGame: ", server.getCurrentGame(playerId))
@@ -58,3 +57,20 @@ while (currentPlayer < 3):
         print("getCurrentGame: ", server.getCurrentGame(playerId))
         time.sleep(5)
 
+score = server.getScores()
+finalScore = "Placar: " + str(score[0]) + "x" + str(score[1])
+if (score[0] == score[1]):
+    finalScore += ". Empatou!"
+else:
+    if (score[0] > score[1]):
+        if playerId == 1:
+            finalScore += ". Você venceu! :D"
+        else:
+            finalScore += ". Você perdeu :,C"
+    else:
+        if playerId == 2:
+            finalScore += ". Você venceu! :D"
+        else:
+            finalScore += ". Você perdeu :,C"
+
+print(finalScore)

@@ -55,8 +55,6 @@ def newGame():
         while added < 2:
             index = getRandomValue(0,(COUNT_CARDS-1),1)
 
-            print
-
             if cards[index] == None:
                 cards[index] = card
                 added = added + 1
@@ -67,33 +65,41 @@ def newGame():
     for c in cards:
         gabaritoStr += str(c["value"]) + ','
     gabaritoStr = gabaritoStr[0:len(gabaritoStr)-1] + ']'
-    #print(gabaritoStr)
+    print(gabaritoStr)
 
     return cards
 
 def guessValidate(guess):
     global cards
 
-    if guess < MIN_CARDS or guess > COUNT_CARDS:
+    if guess < 1 or guess > COUNT_CARDS:
         return -1
     
     if cards[guess-1]["found"]:
         return -1
     
-    if guess == currentGuess[0]:
+    if guess == currentGuess[0] :
         return -1
         
     return guess
 
 def processGuess():
     if currentGuess[0] > 0 and currentGuess[1] > 0 and currentGuess[0] != currentGuess[1] and cards[currentGuess[0]-1]["value"] == cards[currentGuess[1]-1]["value"] and not cards[currentGuess[0]-1]["found"] and not cards[currentGuess[1]-1]["found"]:
-        cards[currentGuess[0]]["found"] = True
-        cards[currentGuess[1]]["found"] = True
+        cards[currentGuess[0]-1]["found"] = True
+        cards[currentGuess[1]-1]["found"] = True
         playersScore[currentPlayer-1] += 1
         return 2
     
     return 1
 
+def endGameValidate():
+    global cards
+
+    for c in cards:
+        if not c["found"]:
+            return False
+        
+    return True
 #--------------------------------------- AÇÕES DO JOGO ---------------------------------------#
 
 #---------------------------------------- COMUNICAÇÃO ---------------------------------------#
@@ -114,6 +120,9 @@ def getCurrenPlayer():
 
     if clientsCouter < 2:
         return 0
+
+    if endGameValidate():
+        return 3
 
     return currentPlayer
 
@@ -149,8 +158,6 @@ def sendGuess(playerId, guess):
             if res != 2:
                 changeCurentPlayer()
 
-
-    # print(currentGuess)
     return 1
 
 def getCurrentGame(playerId):
@@ -159,10 +166,11 @@ def getCurrentGame(playerId):
     global cards
 
     print(currentGuess)
+    print(playersScore)
 
     jogoStr = '['
     for i, c in enumerate(cards):
-        if ((currentGuess[0] != 0 and currentGuess[0] == i) or (currentGuess[1] != 0 and currentGuess[1] == i)):
+        if ((currentGuess[0] != 0 and currentGuess[0]-1 == i) or (currentGuess[1] != 0 and currentGuess[1]-1 == i)):
             jogoStr += str(c["value"]) + ','
         else:
             jogoStr += 'X,' if not c["found"] else  str(c["value"]) + ','
@@ -176,7 +184,9 @@ def getCurrentGame(playerId):
 
     return jogoStr
 
-
+def getScores():
+    global playersScore
+    return playersScore
 #---------------------------------------- COMUNICAÇÃO ---------------------------------------#
 
 if platform.system() == "Windows":
@@ -209,6 +219,7 @@ servidor.register_function(connect, "connect")
 servidor.register_function(getCurrenPlayer, "getCurrenPlayer")
 servidor.register_function(getCurrentGame, "getCurrentGame")
 servidor.register_function(sendGuess, "sendGuess")
+servidor.register_function(getScores, "getScores")
 
 
 servidor.serve_forever()
