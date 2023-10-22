@@ -7,7 +7,7 @@ import platform
 
 MAX_CARDS = 100
 MIN_CARDS = 1
-COUNT_CARDS = 40
+COUNT_CARDS = 16
 
 if len(sys.argv) != 2:
     print("%s <porta>" % sys.argv[0])

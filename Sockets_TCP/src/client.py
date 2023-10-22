@@ -18,21 +18,21 @@ if playerId == 1:
     print("Aguardando seu adversário...")
 
 # Game window parameters
-WIDTH = 700
-HEIGHT = 800
+WIDTH = 600
+HEIGHT = 650
 
-GRID_Y = HEIGHT - 200
-GRID_X = 0 + 100
+GRID_Y = HEIGHT - 140
+GRID_X = 0 + 50
 GRID_GAP = 10
 
-CARD_COUNT = 40
+CARD_COUNT = 16
 CARD_COUNT_WITHOUT_DIPLICATES = int(CARD_COUNT / 2)
 
 COLUMN_COUNT = 8
 ROW_COUNT = int(CARD_COUNT / COLUMN_COUNT)
 
-CARD_WIDTH = 65
-CARD_HEIGHT = 120
+CARD_WIDTH = 60
+CARD_HEIGHT = 95
 
 STATES = {
     'WAITING_PLAYER': 'Aguardando segundo jogador...',
