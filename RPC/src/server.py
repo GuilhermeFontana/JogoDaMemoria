@@ -90,8 +90,9 @@ def processGuess():
         cards[currentGuess[0]]["found"] = True
         cards[currentGuess[1]]["found"] = True
         playersScore[currentPlayer-1] += 1
-    else:
-        changeCurentPlayer()
+        return 2
+    
+    return 1
 
 #--------------------------------------- AÇÕES DO JOGO ---------------------------------------#
 
@@ -127,6 +128,10 @@ def sendGuess(playerId, guess):
     if currentGuessRead < 3 and currentGuess[1] != 0:
         return 0
 
+    if currentGuessRead == 3 and currentGuess[1] != 0:
+        currentGuess = [0,0]
+        currentGuessRead = 0
+
     print("Recebi: ", guess, " | ", playerId)
     _guess = guessValidate(int(guess))
 
@@ -140,9 +145,12 @@ def sendGuess(playerId, guess):
     else:
         if currentGuess[1] == 0:
             currentGuess[1] = _guess
-            processGuess()
+            res = processGuess()
+            if res != 2:
+                changeCurentPlayer()
 
-    print(currentGuess)
+
+    # print(currentGuess)
     return 1
 
 def getCurrentGame(playerId):
@@ -163,13 +171,8 @@ def getCurrentGame(playerId):
     if currentGuess[1] == 0:
         return jogoStr
 
-    if currentGuessRead < 3:
-        if currentGuessRead != playerId:
-            currentGuessRead += playerId
-    else:
-        currentGuess = [0,0]
-        currentGuessRead = 0
-        changeCurentPlayer()
+    if currentGuessRead < 3 and currentGuessRead != playerId:
+        currentGuessRead += playerId
 
     return jogoStr
 

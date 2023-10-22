@@ -35,20 +35,26 @@ if playerId == 1:
         currentPlayer = server.getCurrenPlayer()
 
 while (currentPlayer < 3):
+    currentPlayer = server.getCurrenPlayer()
+    print("CP: ", currentPlayer)
+
     if playerId == currentPlayer:
+        print("getCurrentGame: ", server.getCurrentGame(playerId))
         print("Sua vez. Escolha a primeira carta")
         userGuess = input()
         res = server.sendGuess(playerId, userGuess)
         print("getCurrentGame: ", server.getCurrentGame(playerId))
 
-        print("Escolha a segunda carta")
-        userGuess = input()
-        res = server.sendGuess(playerId, userGuess)
-        print("getCurrentGame: ", server.getCurrentGame(playerId))
+        if res == 1:
+            print("Escolha a segunda carta")
+            userGuess = input()
+            res = server.sendGuess(playerId, userGuess)
+            print("getCurrentGame: ", server.getCurrentGame(playerId))
+
+            if res != 2:
+                currentPlayer -= 1
 
     else:
         print("getCurrentGame: ", server.getCurrentGame(playerId))
         time.sleep(5)
 
-    currentPlayer = server.getCurrenPlayer()
-    print("CP: ", currentPlayer)
