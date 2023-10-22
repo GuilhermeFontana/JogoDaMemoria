@@ -5,6 +5,9 @@ import sys
 import time
 
 
+SLEEP_TIME = 5
+
+
 if len(sys.argv) != 3:
     print("$s <host> <porta>" % sys.argv[0])
     sys.exit(0)
@@ -31,7 +34,7 @@ currentPlayer = server.getCurrenPlayer()
 if playerId == 1:
     while (currentPlayer == 0):
         print("Aguardando adversário")
-        time.sleep(5)
+        time.sleep(SLEEP_TIME)
         currentPlayer = server.getCurrenPlayer()
 
 while (currentPlayer < 3):
@@ -55,7 +58,7 @@ while (currentPlayer < 3):
 
     else:
         print("getCurrentGame: ", server.getCurrentGame(playerId))
-        time.sleep(5)
+        time.sleep(SLEEP_TIME)
 
 score = server.getScores()
 finalScore = "Placar: " + str(score[0]) + "x" + str(score[1])
