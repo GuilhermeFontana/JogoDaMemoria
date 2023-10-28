@@ -55,11 +55,9 @@ class MyGame(arcade.Window):
         self.GAME_STATE = STATES['WAITING_PLAYER']
         self.first_selected_card_number = None
         self.second_selected_card_number = None
-        self.opponent_moves_count = 0
         self.end_game_msg = ''
 
         self.current_player = currentPlayer
-        self.is_screen_filled = False
 
         self.grid = []
 
@@ -77,22 +75,6 @@ class MyGame(arcade.Window):
                 card_index = c + r * COLUMN_COUNT
                 self.grid[r][c] = cards[card_index]
 
-    def update_grid_based_on_movement(self, move):
-        print(f'update grid based on move: {move}')
-        card_number, card_value = move.split('-')
-        card_index = int(card_number) - 1
-
-        col = card_index % COLUMN_COUNT
-        row = card_index // COLUMN_COUNT
-
-        print(f'row = card_index % COLUMN_COUNT  --- row = {card_index} % {COLUMN_COUNT}')
-        print(f'col = card_index // COLUMN_COUNT  --- col = {card_index} // {COLUMN_COUNT}')
-
-        self.grid[row][col] = card_value
-        print(f'card_number={card_number}')
-        print(f'card_index={card_index}')
-        print(f'self.grid[row][col] = card_value: self.grid[{row}][{col}] = {card_value}')
-
     def setup(self):
         pass
 
@@ -103,7 +85,6 @@ class MyGame(arcade.Window):
 
     def on_draw(self):
         arcade.start_render()
-        self.is_screen_filled = True
         arcade.draw_text(self.GAME_STATE, 350, HEIGHT - 50, arcade.color.BLACK, anchor_x='center')
 
         if self.GAME_STATE == STATES['END_GAME']:
@@ -168,50 +149,6 @@ class MyGame(arcade.Window):
                 else:
                     self.GAME_STATE = STATES['WAITING_TURN']
         
-        if False and self.GAME_STATE == STATES['WAITING_TURN'] and self.is_screen_filled and self.opponent_moves_count < 2:
-            pass
-            # # ficaremos esperando a jogada do oponente
-            # print('pre socket.recv opponent move')
-            # opponent_move = client_socket.recv(1024).decode('utf-8')
-            # self.update_grid_based_on_movement(opponent_move)
-            # print(f'pos socket.recv opponent move: {opponent_move}')
-
-            # self.opponent_moves_count += 1
-
-            # if self.opponent_moves_count == 2:
-            #     self.GAME_STATE = STATES['WAITING_CURRENT_PLAYER_SELECTION']
-
-            # # HACK: remova esta linha e verás
-            # self.on_draw()
-
-        if False and  self.GAME_STATE == STATES['WAITING_PLAYER'] or self.GAME_STATE == STATES['WAITING_CURRENT_PLAYER_SELECTION']:
-            pass
-            # print('pre socket.recv currentPlayer')
-            # self.current_player = int(client_socket.recv(1024).decode('utf-8'))
-            # print(f'pos socket.recv self.current_player: {self.current_player}')
-
-            # if playerId == self.current_player:
-            #     self.GAME_STATE = STATES['WAITING_FIRST_CARD']
-            # elif self.current_player == 0:
-            #     self.GAME_STATE = STATES['END_GAME']
-            # else:
-            #     self.GAME_STATE = STATES['WAITING_TURN']
-
-            # if self.GAME_STATE == STATES['END_GAME']:
-            #     self.end_game_msg = client_socket.recv(1024).decode('utf-8')
-            # else:
-            #     print('pre socket.recv cards')  
-            #     data = client_socket.recv(1024).decode('utf-8')
-            #     data = data.replace('[', '').replace(']', '').split(',')
-            #     self.update_grid(data)
-            #     print(f'pos socket.recv cards: {data}')
-
-            #     self.opponent_moves_count = 0
-            #     self.first_selected_card_number = None
-            #     self.second_selected_card_number = None
-
-            #     time.sleep(2)
-
         if self.GAME_STATE == STATES['WAITING_CURRENT_PLAYER_SELECTION']:
             self.first_selected_card_number = None
             self.second_selected_card_number = None
@@ -227,33 +164,10 @@ class MyGame(arcade.Window):
             server.sendGuess(playerId, self.first_selected_card_number)
             self.GAME_STATE = STATES['WAITING_SECOND_CARD']
             
-            # # print(f'pre socket send first card: {self.first_selected_card_number}')
-            # # client_socket.send(str(self.first_selected_card_number).encode('utf-8'))
-            # # print(f'pos socket send first card')
-            
-            # print('pre socket.recv move')
-            # move = client_socket.recv(1024).decode('utf-8')
-            # print(f'pos socket.recv move: {move}')
-
-            # self.update_grid_based_on_movement(move)
-            # self.GAME_STATE = STATES['WAITING_SECOND_CARD']
-
         if self.GAME_STATE == STATES['WAITING_SECOND_CARD'] and self.second_selected_card_number != None:
             server.sendGuess(playerId, self.second_selected_card_number)
             self.GAME_STATE = STATES['WAITING_CURRENT_PLAYER_SELECTION']
 
-            # print(f'pre socket send second card: {self.second_selected_card_number}')
-            # client_socket.send(str(self.second_selected_card_number).encode('utf-8'))
-            # print(f'pos socket send second card')
-            
-            # print('pre socket.recv second move')
-            # move = client_socket.recv(1024).decode('utf-8')
-            # print(f'pos socket.recv second move: {move}')
-
-            # self.update_grid_based_on_movement(move)
-            # self.GAME_STATE = STATES['WAITING_CURRENT_PLAYER_SELECTION']
-            
-        
     def on_mouse_motion(self, x, y, delta_x, delta_y):
         """
         Called whenever the mouse moves.
@@ -265,8 +179,6 @@ class MyGame(arcade.Window):
             print(f'GRID: {self.grid}')
             return
     
-        print(self.GAME_STATE)
-        
         if self.GAME_STATE != STATES['WAITING_FIRST_CARD'] and self.GAME_STATE != STATES['WAITING_SECOND_CARD']:
             return
         
