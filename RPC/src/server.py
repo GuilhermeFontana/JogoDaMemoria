@@ -3,10 +3,11 @@ import platform
 import xmlrpc.server
 import sys
 import random
+import threading
 
 MAX_CARDS = 100
 MIN_CARDS = 1
-COUNT_CARDS = 40
+COUNT_CARDS = 8
 
 
 #---------------------------------------- UTILITARIOS ----------------------------------------#
@@ -23,6 +24,12 @@ def getRandomValue(min, max, level):
 def changeCurentPlayer():
     global currentPlayer
     currentPlayer = 2 if currentPlayer == 1 else 1
+
+def clearGuesses():
+    print('removendo guess incorreta')
+    global currentGuess
+    currentGuess = [0,0]
+
 #---------------------------------------- UTILITARIOS ----------------------------------------#
 
 #--------------------------------------- AÇÕES DO JOGO ---------------------------------------#
@@ -158,6 +165,10 @@ def sendGuess(playerId, guess):
             if res != 2:
                 changeCurentPlayer()
 
+            # limapando a guess errada em 1.5 segs
+            t = threading.Timer(1.5, clearGuesses)
+            t.start()
+
     return 1
 
 def getCurrentGame(playerId):
@@ -220,6 +231,7 @@ servidor.register_function(getCurrenPlayer, "getCurrenPlayer")
 servidor.register_function(getCurrentGame, "getCurrentGame")
 servidor.register_function(sendGuess, "sendGuess")
 servidor.register_function(getScores, "getScores")
+servidor.register_function(clearGuesses, "clearGuesses")
 
 
 servidor.serve_forever()

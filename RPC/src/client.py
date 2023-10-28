@@ -1,7 +1,6 @@
 import arcade
 import xmlrpc.client
 import sys
-import socket
 import time
 
 if len(sys.argv) != 3:
@@ -29,7 +28,7 @@ GRID_Y = HEIGHT - 140
 GRID_X = 0 + 50
 GRID_GAP = 10
 
-CARD_COUNT = 16
+CARD_COUNT = 8
 CARD_COUNT_WITHOUT_DIPLICATES = int(CARD_COUNT / 2)
 
 COLUMN_COUNT = 8
@@ -131,11 +130,28 @@ class MyGame(arcade.Window):
 
     def update(self, _dt):
         if self.current_player != 0:
-            time.sleep(0.1)
+            time.sleep(0.3)
             self.update_game_grid_from_server()
-            print(self.grid)
             self.current_player = server.getCurrenPlayer()
-            print(self.current_player)
+
+        if self.current_player == 3:
+            self.GAME_STATE = STATES['END_GAME']
+            score = server.getScores()
+            finalScore = "Placar: " + str(score[0]) + "x" + str(score[1])
+            if (score[0] == score[1]):
+                finalScore += ". Empatou!"
+            else:
+                if (score[0] > score[1]):
+                    if playerId == 1:
+                        finalScore += ". Você venceu! :D"
+                    else:
+                        finalScore += ". Você perdeu :,C"
+                else:
+                    if playerId == 2:
+                        finalScore += ". Você venceu! :D"
+                    else:
+                        finalScore += ". Você perdeu :,C"
+            self.end_game_msg = finalScore
 
         if self.GAME_STATE == STATES['WAITING_TURN']:
             if self.current_player == playerId:
@@ -144,7 +160,6 @@ class MyGame(arcade.Window):
                 self.GAME_STATE = STATES['WAITING_TURN']
         
         if self.GAME_STATE == STATES['WAITING_PLAYER']:
-            time.sleep(0.1)
             self.current_player = server.getCurrenPlayer()
             if self.current_player != 0:
                 # temos 2 players!
@@ -198,8 +213,6 @@ class MyGame(arcade.Window):
             #     time.sleep(2)
 
         if self.GAME_STATE == STATES['WAITING_CURRENT_PLAYER_SELECTION']:
-            time.sleep(0.1)
-
             self.first_selected_card_number = None
             self.second_selected_card_number = None
             
@@ -247,9 +260,9 @@ class MyGame(arcade.Window):
         """
 
     def on_mouse_press(self, mouse_x, mouse_y, button, _key_modifiers):
-        print('click')
-        
         if button != 1: # button != left_click
+            print(f'GAME_STATE: {self.GAME_STATE}')
+            print(f'GRID: {self.grid}')
             return
     
         print(self.GAME_STATE)

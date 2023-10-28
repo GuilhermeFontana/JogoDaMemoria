@@ -4,7 +4,6 @@ import xmlrpc.client
 import sys
 import time
 
-
 SLEEP_TIME = 5
 
 
